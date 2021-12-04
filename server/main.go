@@ -13,6 +13,7 @@ import (
 func main() {
 	router := mux.NewRouter()
 
+	router.HandleFunc("/participant", listParticipants).Methods("GET")
 	router.HandleFunc("/participant/{id}", getParticipant).Methods("GET")
 	router.HandleFunc("/participant/", newParticipant).Methods("POST")
 
@@ -25,28 +26,41 @@ func main() {
     log.Fatal(http.ListenAndServe(":8080", router))
 }
 
+func listParticipants(writer http.ResponseWriter, req *http.Request) {
+	participants, err := ListParticipants()
+	if err != nil {
+		// TODO: return error 500 message
+	} else {
+		json.NewEncoder(writer).Encode(participants)
+	}
+}
+
 func getParticipant(writer http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	if params["id"] == "" {
-		participants := ListParticipants()
-		json.NewEncoder(writer).Encode(participants)
-		return
-	}
-
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		fmt.Println(err);
-		// show not found
+		// TODO: show not found
 	}
 
-	participant := GetParticipant(id)
-	json.NewEncoder(writer).Encode(participant);
+	participant, err := GetParticipant(id)
+	if err != nil {
+		// TODO: return error 500 message
+	} else {
+		json.NewEncoder(writer).Encode(participant)
+	}
 }
 
 func newParticipant(writer http.ResponseWriter, req *http.Request) {
 	var participant Participant
 	_ = json.NewDecoder(req.Body).Decode(&participant)
-	json.NewEncoder(writer).Encode(NewParticipant(participant))
+	
+	added, err := NewParticipant(participant)
+	if err != nil {
+		json.NewEncoder(writer).Encode(added)
+	} else {
+		// TODO: return error 500 message
+	}
 }
 
 func getTeam(writer http.ResponseWriter, req *http.Request) {
@@ -60,7 +74,7 @@ func getTeam(writer http.ResponseWriter, req *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		fmt.Println(err);
-		// show not found
+		// TODO: show not found
 	}
 
 	team := GetTeam(id)
@@ -79,7 +93,7 @@ func addParticipant(writer http.ResponseWriter, req *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		fmt.Println(err);
-		// show not found
+		// TODO: show not found
 	}
 
 	var body struct{ParticipantId int `json:"participantId"`}
@@ -93,7 +107,7 @@ func updateWishList(writer http.ResponseWriter, req *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		fmt.Println(err);
-		// show not found
+		// TODO: show not found
 	}
 
 	var body struct{Wishlist []Profile `json:"wishlist"`}

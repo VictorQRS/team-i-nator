@@ -22,7 +22,7 @@ func ListTeams() []Team {
 
 func NewTeam(name string, founderId int) TeamFull {
 	participants := make([]Participant, 1)
-	participants[0] = GetParticipant(founderId)
+	participants[0], _ = GetParticipant(founderId)
 
 	return TeamFull {
 		0,
@@ -33,9 +33,9 @@ func NewTeam(name string, founderId int) TeamFull {
 }
 
 func AddParticipant(teamId int, participantId int) {
-	// set teamId of Partificipant of id `id`
+	// TODO: set teamId of Partificipant of id `id`
 }
 
 func UpdateWishList(teamId int, wishlist []Profile) {
-	// upsert tuple (teamId, profileId)
+	// TODO: upsert tuple (teamId, profileId)
 }
