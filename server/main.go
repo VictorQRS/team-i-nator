@@ -13,10 +13,11 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/participant", listParticipants).Methods("GET")
+	router.HandleFunc("/participant/", listParticipants).Methods("GET")
 	router.HandleFunc("/participant/{id}", getParticipant).Methods("GET")
 	router.HandleFunc("/participant/", newParticipant).Methods("POST")
 
+	router.HandleFunc("/team/", listTeams).Methods("GET")
 	router.HandleFunc("/team/{id}", getTeam).Methods("GET")
 	router.HandleFunc("/team/", newTeam).Methods("POST")
 	router.HandleFunc("/team/{id}/participant", addParticipant).Methods("POST")
@@ -29,6 +30,7 @@ func main() {
 func listParticipants(writer http.ResponseWriter, req *http.Request) {
 	participants, err := ListParticipants()
 	if err != nil {
+		fmt.Println(err);
 		// TODO: return error 500 message
 	} else {
 		json.NewEncoder(writer).Encode(participants)
@@ -45,6 +47,7 @@ func getParticipant(writer http.ResponseWriter, req *http.Request) {
 
 	participant, err := GetParticipant(id)
 	if err != nil {
+		fmt.Println(err);
 		// TODO: return error 500 message
 	} else {
 		json.NewEncoder(writer).Encode(participant)
@@ -57,34 +60,50 @@ func newParticipant(writer http.ResponseWriter, req *http.Request) {
 	
 	added, err := NewParticipant(participant)
 	if err != nil {
-		json.NewEncoder(writer).Encode(added)
-	} else {
+		fmt.Println(err);
 		// TODO: return error 500 message
+	} else {
+		json.NewEncoder(writer).Encode(added)
+	}
+}
+
+func listTeams(writer http.ResponseWriter, req *http.Request) {
+	teams, err := ListTeams()
+	if err != nil {
+		fmt.Println(err);
+		// TODO: return error 500 message
+	} else {
+		json.NewEncoder(writer).Encode(teams)
 	}
 }
 
 func getTeam(writer http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	if params["id"] == "" {
-		teams := ListTeams()
-		json.NewEncoder(writer).Encode(teams)
-		return
-	}
-
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		fmt.Println(err);
 		// TODO: show not found
 	}
 
-	team := GetTeam(id)
-	json.NewEncoder(writer).Encode(team);
+	team, err := GetTeam(id)
+	if err != nil {
+		fmt.Println(err);
+		// TODO: return error 500 message
+	} else {
+		json.NewEncoder(writer).Encode(team)
+	}
 }
 
 func newTeam(writer http.ResponseWriter, req *http.Request) {
 	var body struct{Name string `json:"name"`; FounderId int `json:"founderId"`}
 	_ = json.NewDecoder(req.Body).Decode(&body)
-	json.NewEncoder(writer).Encode(NewTeam(body.Name, body.FounderId))
+	team, err := NewTeam(body.Name, body.FounderId)
+	if err != nil {
+		fmt.Println(err);
+		// TODO: return error 500 message
+	} else {
+		json.NewEncoder(writer).Encode(team)
+	}
 }
 
 func addParticipant(writer http.ResponseWriter, req *http.Request) {
@@ -98,7 +117,11 @@ func addParticipant(writer http.ResponseWriter, req *http.Request) {
 
 	var body struct{ParticipantId int `json:"participantId"`}
 	_ = json.NewDecoder(req.Body).Decode(&body)
-	AddParticipant(id, body.ParticipantId)
+	err = AddParticipant(id, body.ParticipantId)
+	if err != nil {
+		fmt.Println(err);
+		// TODO: show 500
+	}
 }
 
 func updateWishList(writer http.ResponseWriter, req *http.Request) {
@@ -112,5 +135,9 @@ func updateWishList(writer http.ResponseWriter, req *http.Request) {
 
 	var body struct{Wishlist []Profile `json:"wishlist"`}
 	_ = json.NewDecoder(req.Body).Decode(&body)
-	UpdateWishList(id, body.Wishlist)
+	err = UpdateWishList(id, body.Wishlist)
+	if err != nil {
+		fmt.Println(err);
+		// TODO: show 500
+	}
 }

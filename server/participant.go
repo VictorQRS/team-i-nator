@@ -4,6 +4,11 @@ import (
 	"database/sql"
 )
 
+type ParticipantSimple struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+}
+
 type Participant struct {
 	Id int `json:"id"`
 	Name string `json:"name"`
@@ -160,6 +165,8 @@ func NewParticipant(participant Participant) (Participant, error) {
 		return Participant{}, err;
 	}
 
+	txn.Commit()
+
 	return participant, nil
 }
 
@@ -185,4 +192,18 @@ func insertContactInfo(db *sql.DB, participantId int, contactInfo ContactInfo) e
 		return err
 	}
 	return nil
+}
+
+func AssignToTeam(id int, teamId int, db *sql.DB) error {
+	if (db == nil) {
+		db = SetupDB()
+	}
+
+	// this does not stop if user does not exist, bad for team creation
+	_, err := db.Exec("UPDATE participants SET teamID = $1 WHERE id = $2;", teamId, id)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
