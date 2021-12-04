@@ -1,15 +1,20 @@
 package main
 
 type Participant struct {
-	Name string
-	Profile []Profile
-	ContactInfo ContactInfo
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Profile []Profile `json:"profiles"`
+	ContactInfo ContactInfo `json:"contactInfo"`
 }
 
-func NewParticipant(name string, profile []Profile, info ContactInfo) Participant {
-	return Participant {
-		name,
-		profile,
-		info,
-	}
+func GetParticipant(id int) Participant {
+	return Participant{}
+}
+
+func ListParticipants() []Participant {
+	return []Participant{}
+}
+
+func NewParticipant(participant Participant) Participant {
+	return participant
 }

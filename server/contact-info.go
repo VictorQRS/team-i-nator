@@ -1,5 +1,5 @@
 package main
 
 type ContactInfo struct {
-	Email string
+	Email string `json:"email"`
 }
