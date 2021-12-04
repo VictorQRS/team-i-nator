@@ -1,26 +1,41 @@
 package main
 
 type Team struct {
-	Name string
-	Participants []Participant
-	WishList []Profile
+	Id int `json:"id"`
+	Name string `json:"name"`
 }
 
-func NewTeam(name string, participant Participant) Team {
+type TeamFull struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Participants []Participant `json:"participants"`
+	WishList []Profile `json:"wishlist"`
+}
+
+func GetTeam(id int) TeamFull {
+	return TeamFull{}
+}
+
+func ListTeams() []Team {
+	return []Team{}
+}
+
+func NewTeam(name string, founderId int) TeamFull {
 	participants := make([]Participant, 1)
-	participants[0] = participant
-	
-	return Team {
+	participants[0] = GetParticipant(founderId)
+
+	return TeamFull {
+		0,
 		name,
 		participants,
 		make([]Profile, 0),
 	}
 }
 
-func (team *Team) AddParticipant(participant Participant) {
-	team.Participants = append(team.Participants, participant)
+func AddParticipant(teamId int, participantId int) {
+	// set teamId of Partificipant of id `id`
 }
 
-func (team *Team) UpdateWishList(wishlist []Profile) {
-	team.WishList = wishlist
+func UpdateWishList(teamId int, wishlist []Profile) {
+	// upsert tuple (teamId, profileId)
 }
